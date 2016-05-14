@@ -14,7 +14,9 @@ public:
   //~State;
   State getState();
   void setStateChildren(State *s);
+  void setStateParents(State *s);
   vector<State*> *getChildren();
+  vector<State*> *getParents();
   void setFirstMove(bool b);
   void setPosition(int p[]);
   void setfirst();
@@ -27,6 +29,7 @@ public:
   void setFinal(bool f);
   void setReject(bool r);
   void print();
+
 private:
   bool final;
   bool reject;
@@ -35,6 +38,7 @@ private:
   //  vector<int> * _position;
   int _position[9];// = {2, 2, 2, 2, 2, 2, 2, 2, 2};
   vector<State*> *_children;
+  vector<State*> *_parents;
 };
 
 

@@ -7,6 +7,7 @@ State::State(){
     _position[i] = 2;
   firstPlayerMove = true;
    _children = new vector<State *> ();
+   _parents = new vector<State *> ();
 };
 
 State::State(const State &s){
@@ -21,11 +22,21 @@ State::State(const State &s){
   this->firstPlayerMove = !(s.firstPlayerMove);
 }
 
-void State::setStateChildren(State *s){  
+void State::setStateChildren(State *s){
   _children->push_back(s);
 }
+
+void State::setStateParents(State *s){
+    _parents->push_back(s);
+}
+
 vector<State*> *State::getChildren(){
   return _children;
+
+}
+
+vector<State*> *State::getParents(){
+  return _parents;
 
 }
 
