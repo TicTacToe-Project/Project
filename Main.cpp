@@ -16,7 +16,6 @@ bool draw(int p[]);
 //bool check(int p[], int a[]);
 
 void CreateDFA(State *root, State *state, int n){
-  cout << "Tier (9 being the top, 1 being the bottom " << n << endl;
   if (n == 0 || state == nullptr)
     return;
   if (state->isFinal())
@@ -39,44 +38,49 @@ void dependents(State *root, State *state, bool first){
   else
     symbol = 0;
   int count = 0;
-     while (count < 9){
-       if (state->position()[count] == 2 && state->position()[count] != 1 && state->position()[count] != 0){
+  while (count < 9){
+    if (state->position()[count] == 2 && state->position()[count] != 1 && state->position()[count] != 0){
       // If move is blank, it creates a new State called child and changes that position to the symbol
       // then adds that child to state's children
-	 int check[9];
-	 for(int i = 0; i < 9; i++)
+      int check[9];
+      for(int i = 0; i < 9; i++)
 	   check[i] = state->position()[i];
-	 check[count] = symbol;
-	 State *child = root->find(root, check);
-	 if (child == nullptr){
+      check[count] = symbol;
+      cout << "Looking for..." << endl;
+      for (int i = 0; i < 9; i++)
+	cout << "Position " << i << ": " << check[i] << endl;
+      cout << endl;
+      State *child = root->find(root, check);
+      if (child == nullptr){
 	   child = new State();
 	   cout << "Was nullptr" << endl;
+	   cout << "Count was " << count << endl;
 	   child->setPosition(state->position());
-	 }
-	 else
-	   cout << "Found it!" << endl;
-	 child->setFirstMove(!(state->firstMove()));
-	child->position()[count] = symbol;
-	child->setFinal(win(child->position(), 1));
-	child->setReject(win(child->position(), 0));
-
-	child->setDraw(draw(child->position()));
-	state->setStateChildren(child);
-	//	state->setStateChildren(child);
-	/*	if(checkCopy(root, state, child)){
-	  child = nullptr;
-	  delete child; 
-	  cout << "Deleted Child" << endl;
+	   child->setFirstMove(!(state->firstMove()));
+	   child->position()[count] = symbol;
+	   child->setFinal(win(child->position(), 1));
+	   child->setReject(win(child->position(), 0));
+	   child->setDraw(draw(child->position()));
+      }
+      else
+	cout << "Found it!" << endl;
+      
+      state->setStateChildren(child);
+      //	state->setStateChildren(child);
+      /*	if(checkCopy(root, state, child)){
+		child = nullptr;
+		delete child; 
+	cout << "Deleted Child" << endl;
 	}
         else {
-	  cout << "Set Child from Dependents, not copy" << endl;
-
-	  }*/
-       }
-       count++;
-     }
+	cout << "Set Child from Dependents, not copy" << endl;
+	
+	}*/
+    }
+    count++;
+    
+  }
 }
-
 bool win(int p[], int symbol){
   if(p[0] == symbol && p[1] == symbol && p[2] == symbol)
     return true;
@@ -179,7 +183,7 @@ bool check(int p[], int a[]){
 
 int main(){
   State * s = new State();
-  CreateDFA(s, s, 5);
+  CreateDFA(s, s, 8);
   //  s->print();
   int q[9] = {2, 2, 2, 1, 1, 1, 1, 1, 0};
   int b[9] = {2, 2, 2, 1, 1, 1, 1, 1, 0};

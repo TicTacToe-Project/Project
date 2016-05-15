@@ -76,14 +76,13 @@ void State::setReject(bool r){
 
 
 State *State::find(State * root, int p[]){
-  if (root == nullptr)
+  if (root->isFinal() || root->isReject() || root->isDraw())
     return nullptr;
   for (vector<State*>::iterator iter = root->_children->begin(); iter != root->_children->end(); iter++){
      if(check((*iter)->position(), p))
        return (*iter);
      return find((*iter), p);
   }
-  //return nullptr;
 }
 
 bool State::check(int p[], int q[]){
