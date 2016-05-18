@@ -26,8 +26,6 @@ public:
   bool isFinal();
   bool isReject();
   bool isDraw();
-  void setNumTurns(int n);
-  int numTurns();
   void setDraw(bool d);
   void setFinal(bool f);
   void setReject(bool r);
@@ -38,8 +36,6 @@ private:
   bool reject;
   bool firstPlayerMove;
   bool draw;
-  int _numTurns;
-  // int _position[9];
   vector<int> _position;
   vector<State*> *_parent;
   vector<State*> *_children;

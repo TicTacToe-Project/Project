@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void CreateDFA(State *root, State *state, int n);
+void CreateDFA(State *root, State *state);
 void dependents(State *root, State *state, bool first);
 int size (State *s);
 bool win(vector<int> *p, int symbol);
@@ -16,18 +16,12 @@ bool draw(vector<int> *p);
 bool find(State *root, State * parent, State * child);
 
 
-void CreateDFA(State *root, State *state, int n){
-  if (n == 0 || state == nullptr)
-    return;
-  if (state->isFinal())
-    return;
-  if (state->isReject())
-    return;
-  if(state->isDraw())
+void CreateDFA(State *root, State *state){
+  if (state == nullptr || state->isFinal() || state->isReject() || state->isDraw())
     return;
   dependents(root, state, state->firstMove());
   for (vector<State*>::iterator iter = state->getChildren()->begin(); iter != state->getChildren()->end(); iter++){
-    CreateDFA(root, *iter, n - 1);
+    CreateDFA(root, *iter);
   }
 }
 
@@ -121,7 +115,7 @@ bool find(State * root, State * parent, State * child){
 
 int main(){
   State * s = new State();
-  CreateDFA(s, s, 9);
+  CreateDFA(s, s);
   int n = size(s);
   cout << "Total Number of Nodes: " << n << endl;
   return 0;

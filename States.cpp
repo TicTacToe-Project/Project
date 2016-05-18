@@ -2,7 +2,6 @@
 
 State::State(){
   final = false;
-  _numTurns = 0;
   reject = false;
   draw = false;
   for (int i = 0; i < 9; i++)
@@ -14,8 +13,6 @@ State::State(){
 
 State::State(const State &s){
   this->final = s.final;
-  /* for( int i = 0; i < 9; i++)
-     this->_position[i] = s._position[i];*/
   this->_position = s._position;
   this->final = s.final;
   this->reject = s.reject;
@@ -48,14 +45,7 @@ bool State::firstMove(){
 }
 
 void State::setPosition(vector<int> *p){
-
-  /* for (int i = 0; i < 9; i++){
-    _position[i] = p[i];
-
-    }*/
-
   for (int i = 0; i < 9; i++){
-    // cout << "Set position " << i << " to " << p[i] << endl;
     _position.at(i) = p->at(i);
   }
 }
@@ -88,53 +78,6 @@ void State::setReject(bool r){
   reject = r;
 }
 
-void State::setNumTurns(int n){
-  _numTurns = n;
-}
-
-int State::numTurns(){
-  return _numTurns;
-}
-
-/*void State::find(State * root, int p[], State * child){
-  if (root->isFinal() || root->isReject() || root->isDraw()){
-    //  child = nullptr;
-    return ;
-  }
-  
-  for (vector<State*>::iterator iter = root->_children->begin(); iter != root->_children->end(); iter++){
-    if(check((*iter)->position(), p)){
-      (*iter)->print();
-      child = new State(**iter);
-      return;
-    }
-    find(*iter, p, child);
-  } 
-}
-
-
-/*State *State::findhelper(State * root, int p[]){
-  if (root == nullptr)
-    return nullptr;
-  for (vector<State*>::iterator iter = root->_children->begin(); iter != root->_children->end(); iter++){
-    for (int i = 0; i < 9; i++)
-      cout << (*iter)->position()[i] << " & " << p[i] << endl;
-    if(check((*iter)->position(), p))
-      return (*iter);
-    return find((*iter), p);
-  }
-}
-*/
-
-/*bool State::check(int p[], int q[]){
-  for( int i = 0; i < 9; i++){
-    //    cout << "Checking " << p[i] << " & " << q[i] << endl;
-    if (p[i] != q[i])
-      return false;
-  }
-  // cout << "Returning turn" << endl;
-  return true;
-  }*/
 void State::print(){
   for(int i = 0; i < 9; i++)
     cout << "Position " << i << ": " << _position[i] << endl;
