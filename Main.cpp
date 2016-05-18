@@ -5,6 +5,9 @@
 #include <iostream>
 #include <vector>
 #include "States.hpp"
+#include <time.h>
+#include <stdlib.h>
+
 
 using namespace std;
 
@@ -17,7 +20,7 @@ bool find(State *root, State * parent, State * child);
 
 
 void CreateDFA(State *root, State *state){
-  if (state == nullptr || state->isFinal() || state->isReject() || state->isDraw())
+  if (state == nullptr || state->isFinal() || state->isReject())
     return;
   dependents(root, state, state->firstMove());
   for (vector<State*>::iterator iter = state->getChildren()->begin(); iter != state->getChildren()->end(); iter++){
@@ -42,7 +45,8 @@ void dependents(State *root, State *state, bool first){
       child->setStateParents(state);
       child->setFinal(win(child->position(), 1));
       child->setReject(win(child->position(), 0));
-      child->setDraw(draw(child->position()));
+      if (!(child->isFinal()) && !(child->isReject()))
+	child->setReject(draw(child->position()));
       if(find(root, state, child)){
 	child = nullptr;
 	delete child;
@@ -113,11 +117,48 @@ bool find(State * root, State * parent, State * child){
 
 
 
+int Evaluate(State * root){
+  int sum;
+  if(root->isFinal())
+    sum = 1;
+  else
+    sum = 0;
+  for (vector<State*>::iterator iter = (root)->getChildren()->begin(); iter != (root)->getChildren()->end(); iter++){
+    sum = sum + Evaluate(*iter);
+  }
+  //cout << sum << endl;
+  //  int total = sum /(root->getChildren()->size() + 1);
+  // cout << total << endl;
+  return sum;
+}
+
+int total(State *root){
+  int t;
+  if (root->isReject()|| root->isFinal())
+    t = 1;
+  else
+    t =0;
+  for (vector<State*>::iterator iter = (root)->getChildren()->begin(); iter != (root)->getChildren()->end(); iter++){
+    t = t + total(*iter);
+  }
+  return t;
+}
+
+
+int simulation(State * root){
+  int array[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+  // int 
+  return 0;
+}
 int main(){
   State * s = new State();
   CreateDFA(s, s);
   int n = size(s);
+  int f = Evaluate(s);
+  int t = total(s);
+   float total = ((float)f /(float)t) * 100;
   cout << "Total Number of Nodes: " << n << endl;
+  cout << "Probability that the first player will win: " << total << "%" << endl;
   return 0;
 }
 
