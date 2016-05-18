@@ -13,29 +13,35 @@ public:
   State(const State &s);
   State getState();
   void setStateChildren(State *s);
+  void setStateParents(State *s);
   vector<State*> *getChildren();
+  vector<State*> *getParents();
   void setFirstMove(bool b);
-  void setPosition(int p[]);
+  void setPosition(vector<int> *p);
   void setfirst();
   void setFirstMove();
   bool firstMove();
   string getFirstPlayer();
-  int *position();
+  vector<int> *position();
   bool isFinal();
   bool isReject();
   bool isDraw();
+  void setNumTurns(int n);
+  int numTurns();
   void setDraw(bool d);
   void setFinal(bool f);
   void setReject(bool r);
-  State *find(State * root, int p[]);
-  bool check(int p[], int q[]);
+  
   void print();
 private:
   bool final;
   bool reject;
   bool firstPlayerMove;
   bool draw;
-  int _position[9];
+  int _numTurns;
+  // int _position[9];
+  vector<int> _position;
+  vector<State*> *_parent;
   vector<State*> *_children;
 };
 

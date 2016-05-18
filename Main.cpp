@@ -8,12 +8,13 @@
 
 using namespace std;
 
+void CreateDFA(State *root, State *state, int n);
 void dependents(State *root, State *state, bool first);
 int size (State *s);
-bool win(int p[], int symbol);
-//bool checkCopy(State *root, State *parent, State *kid);
-bool draw(int p[]);
-//bool check(int p[], int a[]);
+bool win(vector<int> *p, int symbol);
+bool draw(vector<int> *p);
+bool find(State *root, State * parent, State * child);
+
 
 void CreateDFA(State *root, State *state, int n){
   if (n == 0 || state == nullptr)
@@ -30,8 +31,8 @@ void CreateDFA(State *root, State *state, int n){
   }
 }
 
+
 void dependents(State *root, State *state, bool first){
-  cout << "Setting Dependents " << endl;
   int symbol;
   if (first)
     symbol = 1;
@@ -39,76 +40,57 @@ void dependents(State *root, State *state, bool first){
     symbol = 0;
   int count = 0;
   while (count < 9){
-    if (state->position()[count] == 2 && state->position()[count] != 1 && state->position()[count] != 0){
-      // If move is blank, it creates a new State called child and changes that position to the symbol
-      // then adds that child to state's children
-      int check[9];
-      for(int i = 0; i < 9; i++)
-	   check[i] = state->position()[i];
-      check[count] = symbol;
-      cout << "Looking for..." << endl;
-      for (int i = 0; i < 9; i++)
-	cout << "Position " << i << ": " << check[i] << endl;
-      cout << endl;
-      State *child = root->find(root, check);
-      if (child == nullptr){
-	   child = new State();
-	   cout << "Was nullptr" << endl;
-	   cout << "Count was " << count << endl;
-	   child->setPosition(state->position());
-	   child->setFirstMove(!(state->firstMove()));
-	   child->position()[count] = symbol;
-	   child->setFinal(win(child->position(), 1));
-	   child->setReject(win(child->position(), 0));
-	   child->setDraw(draw(child->position()));
+    if(state->position()->at(count) == 2 && state->position()->at(count) != 1 && state->position()->at(count) != 0){
+      State *child = new State();
+      child->setPosition(state->position());
+      child->setFirstMove(!(first));
+      child->position()->at(count) = symbol;
+      child->setStateParents(state);
+      child->setFinal(win(child->position(), 1));
+      child->setReject(win(child->position(), 0));
+      child->setDraw(draw(child->position()));
+      if(find(root, state, child)){
+	child = nullptr;
+	delete child;
       }
       else
-	cout << "Found it!" << endl;
-      
-      state->setStateChildren(child);
-      //	state->setStateChildren(child);
-      /*	if(checkCopy(root, state, child)){
-		child = nullptr;
-		delete child; 
-	cout << "Deleted Child" << endl;
-	}
-        else {
-	cout << "Set Child from Dependents, not copy" << endl;
-	
-	}*/
+	state->setStateChildren(child);
     }
     count++;
-    
   }
+  
 }
-bool win(int p[], int symbol){
-  if(p[0] == symbol && p[1] == symbol && p[2] == symbol)
+
+
+
+bool win(vector<int>*p, int symbol){
+  if(p->at(0) == symbol && p->at(1) == symbol && p->at(2) == symbol)
     return true;
-  if(p[0] == symbol && p[4] == symbol && p[8] == symbol)
+  if(p->at(0) == symbol && p->at(4) == symbol && p->at(8) == symbol)
     return true;
-  if(p[0] == symbol && p[6] == symbol && p[3] == symbol)
+  if(p->at(0) == symbol && p->at(6) == symbol && p->at(3) == symbol)
     return true;
-  if(p[1] == symbol && p[4] == symbol && p[7] == symbol)
+  if(p->at(1) == symbol && p->at(4) == symbol && p->at(7) == symbol)
     return true;
-  if(p[2] == symbol && p[4] == symbol && p[6] == symbol)
+  if(p->at(2) == symbol && p->at(4) == symbol && p->at(6) == symbol)
     return true;
-  if(p[2] == symbol && p[5] == symbol && p[8] == symbol)
+  if(p->at(2) == symbol && p->at(5) == symbol && p->at(8) == symbol)
     return true;
-  if(p[3] == symbol && p[4] == symbol && p[5] == symbol)
+  if(p->at(3) == symbol && p->at(4) == symbol && p->at(5) == symbol)
     return true;
-  if(p[6] == symbol && p[7] == symbol && p[8] == symbol)
+  if(p->at(6) == symbol && p->at(7) == symbol && p->at(8) == symbol)
     return true;
   return false;
 }
 
-bool draw(int p[]){
-  if(p[0] != 2 && p[1] != 2 && p[2] != 2 && p[3] != 2 && p[4] != 2 && p[5] != 2 && p[6] != 2 && p[7] != 2 && p[8] != 2){
-    cout << "Set Draw" << endl;
+
+bool draw(vector<int> *p){
+  if(p->at(0) != 2 && p->at(1) != 2 && p->at(2) != 2 && p->at(3) != 2 && p->at(4) != 2 && p->at(5) != 2 && p->at(6) != 2 && p->at(7) != 2 && p->at(8) != 2){
     return true;
   }
   return false;
-
 }
+
 int size (State *s){
   if (s == nullptr)
     return 0;
@@ -116,81 +98,35 @@ int size (State *s){
   for(vector<State*>::iterator iter = s->getChildren()->begin(); iter != s->getChildren()->end(); iter++)
     count = size(*iter) + count;
   return count + 1;
-  }
-
-
-/*bool checkCopy(State *root, State *parent, State *child){
-  cout << "Checking for Copy " << endl;
-  cout << endl;
-  //  if (root == nullptr)
-  //return false;
-
-  if (root->isFinal() || root->isReject() || root->isDraw())
-    return false;
-  
-  for(vector<State*>::iterator iter = root->getChildren()->begin(); iter != root->getChildren()->end(); iter++){
-       cout << endl;
-    cout << "Comparing " << endl;
-    for (int i = 0; i < 9; i++){
-      cout << "Position " << i << ": iter = " << (*iter)->position()[i] << " & child = " << child->position()[i];
-      cout << endl;
-    }
-    cout << endl;
-    
-    cout << endl;
-    if (check(child->position(), (*iter)->position())){
-      cout << endl;
-      cout << "HERE" << endl;
-      cout << endl;
-      cout << endl;
-      cout << endl;
-      parent->setStateChildren(*iter);
-      cout << "Setting new child from checkCopy" << endl;
-      for( int i = 0; i < 9; i++)
-	cout << child->position()[i] << " ";
-      cout << endl;
-      return true;
-
-    }
-    else{
-      cout << "Going deeper" << endl;
-      return checkCopyhelp(*iter, parent, child);
-    }
-  }
-  //  return false;
 }
 
 
 
-bool checkCopyHelp(State *root, State *parent, State *child){
-   for(vector<State*>::iterator iter = root->getChildren()->begin(); iter != root->getChildren()->end(); iter++){
-     
-*/
 
-bool check(int p[], int a[]){
-  for(int i = 0; i < 9; i++)
-    if (p[i] != a[i])
-      return false;
-      return true;
-  /*  bool is_equal = false;
-  for (int i = 0; i < 9; i++)
-    is_equal = (p[i] == a[i]);
-    return is_equal;*/
-
+bool find(State * root, State * parent, State * child){
+  if (root->position()->at(0) == child->position()->at(0) && root->position()->at(1) == child->position()->at(1) && root->position()->at(2) == child->position()->at(2) && root->position()->at(3) == child->position()->at(3) && root->position()->at(4) == child->position()->at(4) && root->position()->at(5) == child->position()->at(5) && root->position()->at(6) == child->position()->at(6) && root->position()->at(7) == child->position()->at(7) && root->position()->at(8) == child->position()->at(8)){
+    root->setStateParents(parent);
+    return true;
+  }
+  else{
+    for (vector<State*>::iterator iter = (root)->getChildren()->begin(); iter != (root)->getChildren()->end(); iter++){
+      if(find((*iter), parent, child))
+	return true;
+    }
+    return false;
+  }
 }
 
 
 
 int main(){
   State * s = new State();
-  CreateDFA(s, s, 8);
-  //  s->print();
-  int q[9] = {2, 2, 2, 1, 1, 1, 1, 1, 0};
-  int b[9] = {2, 2, 2, 1, 1, 1, 1, 1, 0};
-  if (check(q, b))
-    cout << "Same" << endl;
+  CreateDFA(s, s, 9);
   int n = size(s);
   cout << "Total Number of Nodes: " << n << endl;
   return 0;
 }
+
+
+
 
