@@ -14,10 +14,15 @@ State::State(){
 State::State(const State &s){
   this->final = s.final;
   this->_position = s._position;
-  this->final = s.final;
+  /*  for(int i = 0; i < this->_position->size())
+    this->_position->at(i) = s._position.at(i);
+  */
+  cout << "I'm called" << endl;
+this->final = s.final;
   this->reject = s.reject;
   this->firstPlayerMove = s.firstPlayerMove;
   this->_children = s._children;
+  
 }
 
 void State::setStateChildren(State *s){  

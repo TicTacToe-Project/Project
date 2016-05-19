@@ -17,7 +17,8 @@ int size (State *s);
 bool win(vector<int> *p, int symbol);
 bool draw(vector<int> *p);
 bool find(State *root, State * parent, State * child);
-
+int simulation(State * root);
+void find(State * root, State * child);
 
 void CreateDFA(State *root, State *state){
   if (state == nullptr || state->isFinal() || state->isReject())
@@ -45,7 +46,7 @@ void dependents(State *root, State *state, bool first){
       child->setStateParents(state);
       child->setFinal(win(child->position(), 1));
       child->setReject(win(child->position(), 0));
-      if (!(child->isFinal()) && !(child->isReject()))
+      if (child->isFinal() == false && child->isReject() == false)
 	child->setReject(draw(child->position()));
       if(find(root, state, child)){
 	child = nullptr;
@@ -146,10 +147,85 @@ int total(State *root){
 
 
 int simulation(State * root){
-  int array[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
-  // int 
-  return 0;
+  int first_wins = 0;
+  State *current = new State();
+  bool done = false;
+  bool found = false;
+  int symbol;
+  if(root->firstMove())
+    symbol = 1;
+  else
+    symbol = 0;
+  while(found == false){
+    //  current->print();
+    srand(time(NULL));
+    int index = rand() % 9;  
+    if (current->position()->at(index) == 2 && current->position()->at(index) != 1 && current->position()->at(index) != 0){
+      current->position()->at(index) = symbol;
+      found = true;
+      current->setFinal(win(current->position(), 1));
+      current->setReject(win(current->position(), 0));
+      if(current->isFinal() == false && current->isReject() == false)
+	current->setReject(draw(current->position()));
+      /*    cout << endl;
+	    current->print();
+    cout << endl;*/
+      //      cout << "Going to find" << endl;
+      // find(root, current);
+      current->setFirstMove(!(current->firstMove()));
+      if(current->firstMove())
+	symbol = 1;
+      else
+	symbol = 0;
+     
+    }
+    if(current->isFinal()){
+      cout << "Final" << endl;
+      current->print();
+      found = true;
+      first_wins++;
+    }
+    else if(current->isReject()){
+      cout << "Reject" << endl;
+      current->print();
+      found  = true;
+      //break;
+    }
+    else
+      found = false;
+
+
+  }
+  cout << first_wins << endl;
+  current = nullptr;
+  delete current;
+  return first_wins; 
 }
+
+
+
+void find(State * root, State * child){
+   if (root->position()->at(0) == child->position()->at(0) && root->position()->at(1) == child->position()->at(1) && root->position()->at(2) == child->position()->at(2) && root->position()->at(3) == child->position()->at(3) && root->position()->at(4) == child->position()->at(4) && root->position()->at(5) == child->position()->at(5) && root->position()->at(6) == child->position()->at(6) && root->position()->at(7) == child->position()->at(7) && root->position()->at(8) == child->position()->at(8)){
+      child = root;
+     return;
+   }
+  for (vector<State*>::iterator iter = (root)->getChildren()->begin(); iter != (root)->getChildren()->end(); iter++){
+    /*    if ((*root)->position()->at(0) == child->position()->at(0) && (*root)->position()->at(1) == child->position()->at(1) && (*root)->position()->at(2) == child->position()->at(2) && (*root)->position()->at(3) == child->position()->at(3) && (*root)->position()->at(4) == child->position()->at(4) && (*root)->position()->at(5) == child->position()->at(5) && (*root)->position()->at(6) == child->position()->at(6) && (*root)->position()->at(7) == child->position()->at(7) && (*root)->position()->at(8) == child->position()->at(8)){
+       cout << "Found" << endl;
+       (*root)->print();
+       child->setFinal((*root)->isFinal());
+       child->setReject((*root)->isReject());
+       child->setPosition((*root)->position());
+       return;
+       }*/
+      find((*iter), child);
+  }
+  
+  return;
+}
+
+
+
 int main(){
   State * s = new State();
   CreateDFA(s, s);
@@ -159,6 +235,11 @@ int main(){
    float total = ((float)f /(float)t) * 100;
   cout << "Total Number of Nodes: " << n << endl;
   cout << "Probability that the first player will win: " << total << "%" << endl;
+  int sim;
+  for(int i = 0; i < 10; i++)
+    sim = simulation(s) + sim;
+
+  cout << "First player wins from simulation: " << sim << endl;
   return 0;
 }
 
